@@ -5,15 +5,6 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-public Plugin myinfo =
-{
-	name = "[TF2] CAF Projectile Drop Plugin",
-	author = "Jessica (The Gun Lady)",
-	description = "",
-	version = "1.0",
-	url = "https://github.com//SM-TF2-ProjectileDrop"
-}
-
 public void OnEntityCreated(int CreatedEntity, const char[] ClassName)
 {
 	if (StrEqual(ClassName,"tf_projectile_rocket"))
@@ -56,7 +47,6 @@ public void RocketLaunch(int RocketEntRef)
 	// I hate how you can't put more than one goddamn bit of data in this thing, WHY?
 	RequestFrame(RocketDrop, RocketEntRef);
 }
-
 
 public void RocketDrop(int RocketEntRef)
 {
