@@ -3,7 +3,7 @@
 This plugin adds two attributes using NoSoop's [TF2 Custom Attribute Framework](https://github.com/nosoop/SM-TFCustAttr).
 
 ## Attributes
-Specifically, it adds the `rocket launch` and `rocket drop` attributes.
+Specifically, it adds the `rocket launch` and `rocket drop` attributes, both of these can be applied to any weapon that fires standard Rocket Launcher-type rockets, Cow Mangler rockets or Righteous Bison projectiles.
 
 `rocket launch` applies the rockets launched from any weapon with the attribute an increase to how quickly it moves up, measured at a rate of hammer units per second.
 The default Rocket Launcher moves at a rate of 1,100 hammer units a second, so setting this value to 1,100 will make the rockets go at a nice 45 degree angle relative to where ever the player is facing.
