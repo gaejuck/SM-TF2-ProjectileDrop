@@ -5,6 +5,20 @@
 #pragma newdecls required
 #pragma semicolon 1
 
+// This is some wonky bollocks so I need to explain this.
+// In spite of the measures I've created previously, a Github user by the name of SnowySnowtime has reported that this plugin causes a memory leak, one I did not catch due to the length of time it takes for this memory leak to make itself known.
+// As such, rather than having one datapack which gets created and passed onto functions by this plugin, I've decided to take an alternate approach.
+// The DataPack list is now an array, accompanied by another array, DataPackEntRefNumber, the int array stores an entity reference corresponding to the entity reference that the DataPack uses, I didn't want to read through DataPacks to find an entity reference because I figured it would be far more costly for performance to do so.
+// FreeDataPack is a integer that is intended to document what number in the array can be written, both arrays will cycle through all 256 entries and store data, FreeDataPack is designed to let the plugin know which array should be written over next, theoretically this does mean that a DataPack for one weapon can override another weapon's datapack, but considering 256 projectiles would have to be created before the first projectile is destroyed, for the most part this should be fine.
+int FreeDataPack;
+int DataPackEntRefNumber[256];
+DataPack AttrPackDrop[256];
+
+public void OnPluginStart()
+{
+	FreeDataPack = 0;
+}
+
 public void OnEntityCreated(int CreatedEntity, const char[] ClassName)
 {
 	if (StrEqual(ClassName,"tf_projectile_rocket"))
@@ -37,13 +51,15 @@ public void Hook_OnRocketSpawn(int CreatedEntity)
 		int RocketDropValue = TF2CustAttr_GetInt(Weapon, "rocket drop");
 
 		// Create a data pack with the rocket entity as well as the two possible attributes, this saves calling TF2CustAttr_GetInt every frame a rocket exists like previous iterations of the code.
-		DataPack AttrPackDrop = new DataPack();
-		WritePackCell(AttrPackDrop, CreatedEntityRef);
-		WritePackCell(AttrPackDrop, RocketLaunchValue);
-		WritePackCell(AttrPackDrop, RocketDropValue);
+		AttrPackDrop[FreeDataPack] = new DataPack();
+		WritePackCell(AttrPackDrop[FreeDataPack], CreatedEntityRef);
+		WritePackCell(AttrPackDrop[FreeDataPack], RocketLaunchValue);
+		WritePackCell(AttrPackDrop[FreeDataPack], RocketDropValue);
+		// Store the created entity reference associated with the data pack
+		DataPackEntRefNumber[FreeDataPack] = CreatedEntityRef;
 
 		// The game doesn't like it when we execute the function immediately, presumably the velocity stuff doesn't start until the next frame?
-		RequestFrame(RocketLaunch, AttrPackDrop);
+		RequestFrame(RocketLaunch, AttrPackDrop[FreeDataPack]);
 	}
 }
 
@@ -105,5 +121,18 @@ public Action RocketDrop(Handle timer, DataPack AttrEntPack)
 	else
 	{
 		CloseHandle(AttrEntPack);
+	}
+}
+
+public void OnEntityDestroyed(int DestroyedEntity)
+{
+	int DestroyedEntityRef = EntIndexToEntRef(DestroyedEntity);
+
+	for (int i = 0 ; DestroyedEntityRef != DataPackEntRefNumber[i] ; i++)
+	{
+		if (DestroyedEntityRef == DataPackEntRefNumber[i])
+		{
+			CloseHandle(AttrPackDrop[i]);
+		}
 	}
 }
