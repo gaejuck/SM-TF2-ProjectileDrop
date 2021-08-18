@@ -61,7 +61,14 @@ public void Hook_OnRocketSpawn(int CreatedEntity)
 		// The game doesn't like it when we execute the function immediately, presumably the velocity stuff doesn't start until the next frame?
 		RequestFrame(RocketLaunch, AttrPackDrop[FreeDataPack]);
 
-		FreeDataPack = FreeDataPack++;
+		if (FreeDataPack < 255)
+		{
+			FreeDataPack = FreeDataPack++;
+		}
+		else
+		{
+			FreeDataPack = 0;
+		}
 	}
 }
 
