@@ -131,17 +131,5 @@ public Action RocketDrop(Handle timer, DataPack AttrEntPack)
 	{
 		CloseHandle(AttrEntPack);
 	}
-}
-
-public void OnEntityDestroyed(int DestroyedEntity)
-{
-	int DestroyedEntityRef = EntIndexToEntRef(DestroyedEntity);
-
-	for (int i = 0 ; DestroyedEntityRef != DataPackEntRefNumber[i] ; i++)
-	{
-		if (DestroyedEntityRef == DataPackEntRefNumber[i])
-		{
-			CloseHandle(AttrPackDrop[i]);
-		}
-	}
+	return Plugin_Continue;
 }
